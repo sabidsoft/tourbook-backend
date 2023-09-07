@@ -10,11 +10,9 @@ const {
     updateTourService
 } = require("../services/tour.service");
 
-
 exports.createTour = async (req, res, next) => {
     try {
         const user = await getUserByEmail(req.user?.email);
-
         const tour = await createTourService({ ...req.body, creator: user._id });
 
         successResponse(res, {
@@ -24,7 +22,7 @@ exports.createTour = async (req, res, next) => {
         })
     }
     catch (err) {
-        next();
+        next(err);
     }
 }
 
