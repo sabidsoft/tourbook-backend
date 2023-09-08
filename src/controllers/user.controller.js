@@ -38,10 +38,12 @@ exports.signUp = async (req, res, next) => {
 
         const token = generateToken({ email }, process.env.JWT_SECRET_KEY, "1h");
 
+        const { password: pass, ...userInfoWithoutPassword } = user.toObject();
+
         successResponse(res, {
             status: 200,
-            message: "signup successfull",
-            payload: { user, token }
+            message: "Sign up successfull",
+            payload: { user: userInfoWithoutPassword, token }
         })
     }
     catch (err) {
@@ -75,7 +77,7 @@ exports.signIn = async (req, res, next) => {
 
         successResponse(res, {
             status: 200,
-            message: "login successfull",
+            message: "Sign in successfull",
             payload: { user: userInfoWithoutPassword, token }
         })
     }
