@@ -3,7 +3,7 @@ const { generateToken } = require("../utils/generateToken");
 const { successResponse } = require("../utils/response");
 const { signupService, getUserByEmail } = require("../services/user.service");
 
-exports.signup = async (req, res, next) => {
+exports.signUp = async (req, res, next) => {
     try {
         const { name, email, password } = req.body;
         const emailValidationPattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
@@ -49,7 +49,7 @@ exports.signup = async (req, res, next) => {
     }
 }
 
-exports.login = async (req, res, next) => {
+exports.signIn = async (req, res, next) => {
     try {
         const { email, password } = req.body;
 
