@@ -36,9 +36,9 @@ exports.signUp = async (req, res, next) => {
 
         const user = await signupService(req.body);
 
-        const token = generateToken({ email }, process.env.JWT_SECRET_KEY, "1h");
-
         const { password: pass, ...userInfoWithoutPassword } = user.toObject();
+
+        const token = generateToken({ email }, process.env.JWT_SECRET_KEY, "365d");
 
         successResponse(res, {
             status: 200,
@@ -71,9 +71,9 @@ exports.signIn = async (req, res, next) => {
         if (!isMatchedPassword)
             throw createError(401, "Your email or password is not correct");
 
-        const token = generateToken({ email }, process.env.JWT_SECRET_KEY, "1h");
-
         const { password: pass, ...userInfoWithoutPassword } = user.toObject();
+
+        const token = generateToken({ email }, process.env.JWT_SECRET_KEY, "365d");
 
         successResponse(res, {
             status: 200,

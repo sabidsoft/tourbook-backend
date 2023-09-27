@@ -1,6 +1,7 @@
 const createError = require("http-errors");
 const { getUserByEmail } = require("../services/user.service");
 const { successResponse } = require("../utils/response");
+const cloudinary = require("../utils/cloudinary");
 const {
     createTourService,
     getToursService,
@@ -12,8 +13,24 @@ const {
 
 exports.createTour = async (req, res, next) => {
     try {
+        const { title, description, tags } = req.body;
+        const { path } = req.file;
+
         const user = await getUserByEmail(req.user?.email);
-        const tour = await createTourService({ ...req.body, creator: user._id });
+        
+        const result = await cloudinary.uploader.upload(path, {
+            folder: "tourbook/tour_images"
+        });
+
+        const data = {
+            title,
+            description,
+            creator: user._id,
+            tags: JSON.parse(tags),
+            imageURL: result.secure_url,
+        };
+
+        const tour = await createTourService(data);
 
         successResponse(res, {
             status: 200,
