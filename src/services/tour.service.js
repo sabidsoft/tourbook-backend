@@ -11,12 +11,12 @@ exports.getToursService = async () => {
 }
 
 exports.getTourService = async (id) => {
-    const tours = await Tour.findOne({ _id: id });
-    return tours;
+    const tour = await Tour.findOne({ _id: id });
+    return tour;
 }
 
 exports.getToursByUserService = async (id) => {
-    const tours = await Tour.find({ creator: id });
+    const tours = await Tour.find({ creatorId: id });
     return tours;
 }
 

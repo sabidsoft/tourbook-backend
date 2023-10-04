@@ -11,10 +11,10 @@ const {
 } = require("../controllers/tour.controller");
 
 router.post("/create-tour", verifyToken, uploads.single("image"), createTour);
-router.get("/tours", verifyToken, getTours);
-router.get("/tours/:id", verifyToken, getTour);
-router.delete("/tours/:id", verifyToken, deleteTour);
-router.patch("/tours/:id", verifyToken, updateTour);
-router.get("/tours/user-tours/:id", verifyToken, getToursByUser);
+router.get("/", getTours);
+router.get("/:id", getTour);
+router.delete("/:id", verifyToken, deleteTour);
+router.patch("/:id", verifyToken, uploads.single("image"), updateTour);
+router.get("/user-tours/:id", verifyToken, getToursByUser);
 
 module.exports = router;

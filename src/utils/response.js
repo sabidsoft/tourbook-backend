@@ -9,6 +9,6 @@ exports.successResponse = (res, { status = 200, message = "Success", payload = {
     res.status(status).json({
         success: true,
         message,
-        payload
+        data: payload
     })
 }

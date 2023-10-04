@@ -16,18 +16,19 @@ exports.createTour = async (req, res, next) => {
         const { title, description, tags } = req.body;
         const { path } = req.file;
 
-        const user = await getUserByEmail(req.user?.email);
-        
         const result = await cloudinary.uploader.upload(path, {
             folder: "tourbook/tour_images"
         });
 
+        const user = await getUserByEmail(req.user?.email);
+
         const data = {
             title,
             description,
-            creator: user._id,
+            creatorId: user._id,
+            creatorName: user.name,
             tags: JSON.parse(tags),
-            imageURL: result.secure_url,
+            imageUrl: result.secure_url,
         };
 
         const tour = await createTourService(data);
@@ -113,7 +114,34 @@ exports.deleteTour = async (req, res, next) => {
 
 exports.updateTour = async (req, res, next) => {
     try {
-        const result = await updateTourService(req.params.id, req.body);
+        const { title, description, tags } = req.body;
+        let cloudinaryImageResult;
+        let data;
+
+        if (req.file) {
+            const { path } = req.file;
+            cloudinaryImageResult = await cloudinary.uploader.upload(path, {
+                folder: "tourbook/tour_images"
+            });
+        }
+
+        if (cloudinaryImageResult) {
+            data = {
+                title,
+                description,
+                tags: JSON.parse(tags),
+                imageUrl: cloudinaryImageResult.secure_url,
+            }
+        } else {
+            data = {
+                title,
+                description,
+                tags: JSON.parse(tags),
+                imageUrl: req.body.image
+            }
+        }
+        
+        const result = await updateTourService(req.params.id, data);
 
         if (result.matchedCount === 0)
             throw createError(400, "failed to update the tour");

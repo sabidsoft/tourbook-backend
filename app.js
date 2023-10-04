@@ -23,7 +23,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // router level middlewares
 app.use("/api/v1/users", userRouter);
-app.use("/api/v1/tour", tourRouter);
+app.use("/api/v1/tours", tourRouter);
 
 // home route
 app.get("/", (req, res) => {

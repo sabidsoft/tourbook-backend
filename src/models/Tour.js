@@ -5,7 +5,8 @@ const tourSchema = new Schema({
     description: String,
     imageUrl: String,
     tags: [String],
-    creator: String,
+    creatorId: String,
+    creatorName: String,
     likeCount: {
         type: Number,
         default: 0,
