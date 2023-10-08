@@ -6,10 +6,61 @@ const {
     createTourService,
     getToursService,
     getTourService,
-    getToursByUserService,
     deleteTourService,
-    updateTourService
+    updateTourService,
 } = require("../services/tour.service");
+
+exports.getTours = async (req, res, next) => {
+    try {
+        let {
+            search = '',
+            page = 1,
+            limit = 9,
+            sort = '-createdAt',
+            field = '',
+            ...filterObject
+        } = req.query;
+
+        filterObject = JSON.stringify(filterObject);
+        filterObject = filterObject.replace(/(gt|gte|lt|lte)/g, (value) => "$" + value);
+        filterObject = JSON.parse(filterObject);
+
+        const searchRegex = new RegExp(".*" + search + ".*", "i");
+        const filters = {
+            ...filterObject,
+            $or: [{ title: { $regex: searchRegex } }]
+        }
+
+        if (sort) sort = sort.split(',').join(' ');
+        if (field) field = field.split(',').join(' ');
+
+        const { tours, pagination } = await getToursService(filters, page, limit, sort, field);
+
+        successResponse(res, {
+            status: 200,
+            message: "all tours returned",
+            payload: { pagination, tours }
+        })
+    }
+    catch (err) {
+        next(err);
+    }
+}
+
+exports.getTour = async (req, res, next) => {
+    try {
+        const tour = await getTourService(req.params.id);
+
+        successResponse(res, {
+            status: 200,
+            message: "single tour returned",
+            payload: { tour }
+        })
+    }
+    catch (err) {
+        next(err);
+    }
+}
 
 exports.createTour = async (req, res, next) => {
     try {
@@ -37,51 +88,6 @@ exports.createTour = async (req, res, next) => {
             status: 200,
             message: "new tour created successfully",
             payload: { tour }
-        })
-    }
-    catch (err) {
-        next(err);
-    }
-}
-
-exports.getTours = async (req, res, next) => {
-    try {
-        const tours = await getToursService();
-
-        successResponse(res, {
-            status: 200,
-            message: "all tours returned",
-            payload: { tours }
-        })
-    }
-    catch (err) {
-        next(err);
-    }
-}
-
-exports.getTour = async (req, res, next) => {
-    try {
-        const tour = await getTourService(req.params.id);
-
-        successResponse(res, {
-            status: 200,
-            message: "single tour returned",
-            payload: { tour }
-        })
-    }
-    catch (err) {
-        next(err);
-    }
-}
-
-exports.getToursByUser = async (req, res, next) => {
-    try {
-        const tours = await getToursByUserService(req.params.id);
-
-        successResponse(res, {
-            status: 200,
-            message: "user tours returned",
-            payload: { tours }
         })
     }
     catch (err) {
@@ -140,7 +146,7 @@ exports.updateTour = async (req, res, next) => {
                 imageUrl: req.body.image
             }
         }
-        
+
         const result = await updateTourService(req.params.id, data);
 
         if (result.matchedCount === 0)

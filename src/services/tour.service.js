@@ -1,13 +1,32 @@
 const Tour = require("../models/Tour");
 
-exports.createTourService = async (data) => {
-    const tour = await Tour.create(data);
-    return tour;
-}
+exports.getToursService = async (filters, page, limit, sort, field) => {
+    page = parseInt(page);
+    limit = parseInt(limit);
 
-exports.getToursService = async () => {
-    const tours = await Tour.find({});
-    return tours;
+    const tours = await Tour
+        .find(filters)
+        .sort(sort)
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .select(field);
+
+    const totalDocuments = await Tour.countDocuments(filters);
+
+    const pagination = {
+        totalPage: Math.ceil(totalDocuments / limit),
+        currentPage: page,
+        previousPage: page - 1 === 0 ? null : page - 1,
+        nextPage: page + 1 <= Math.ceil(totalDocuments / limit) ? page + 1 : null
+    }
+
+    if (pagination.currentPage > pagination.totalPage) {
+        pagination.currentPage = null;
+        pagination.previousPage = null;
+        pagination.nextPage = null;
+    }
+
+    return { tours, pagination };
 }
 
 exports.getTourService = async (id) => {
@@ -15,9 +34,9 @@ exports.getTourService = async (id) => {
     return tour;
 }
 
-exports.getToursByUserService = async (id) => {
-    const tours = await Tour.find({ creatorId: id });
-    return tours;
+exports.createTourService = async (data) => {
+    const tour = await Tour.create(data);
+    return tour;
 }
 
 exports.deleteTourService = async (id) => {

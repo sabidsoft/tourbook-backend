@@ -5,16 +5,14 @@ const {
     createTour,
     getTours,
     getTour,
-    getToursByUser,
     deleteTour,
-    updateTour
+    updateTour,
 } = require("../controllers/tour.controller");
 
-router.post("/create-tour", verifyToken, uploads.single("image"), createTour);
 router.get("/", getTours);
 router.get("/:id", getTour);
+router.post("/", verifyToken, uploads.single("image"), createTour);
 router.delete("/:id", verifyToken, deleteTour);
 router.patch("/:id", verifyToken, uploads.single("image"), updateTour);
-router.get("/user-tours/:id", verifyToken, getToursByUser);
 
 module.exports = router;
