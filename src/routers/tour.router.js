@@ -7,9 +7,11 @@ const {
     getTour,
     deleteTour,
     updateTour,
+    getToursByTagName,
 } = require("../controllers/tour.controller");
 
 router.get("/", getTours);
+router.get("/tag/:tag", getToursByTagName);
 router.get("/:id", getTour);
 router.post("/", verifyToken, uploads.single("image"), createTour);
 router.delete("/:id", verifyToken, deleteTour);

@@ -8,6 +8,7 @@ const {
     getTourService,
     deleteTourService,
     updateTourService,
+    getToursByTagNameService,
 } = require("../services/tour.service");
 
 exports.getTours = async (req, res, next) => {
@@ -38,7 +39,7 @@ exports.getTours = async (req, res, next) => {
 
         successResponse(res, {
             status: 200,
-            message: "all tours returned",
+            message: "All tours returned",
             payload: { pagination, tours }
         })
     }
@@ -53,7 +54,7 @@ exports.getTour = async (req, res, next) => {
 
         successResponse(res, {
             status: 200,
-            message: "single tour returned",
+            message: "Tour returned by id",
             payload: { tour }
         })
     }
@@ -61,6 +62,22 @@ exports.getTour = async (req, res, next) => {
         next(err);
     }
 }
+
+exports.getToursByTagName = async (req, res, next) => {
+    try {
+        const tours = await getToursByTagNameService(req.params.tag);
+
+        successResponse(res, {
+            status: 200,
+            message: "Tours returned by tag.",
+            payload: { tours }
+        })
+    }
+    catch (err) {
+        next(err);
+    }
+}
+
 
 exports.createTour = async (req, res, next) => {
     try {
@@ -86,7 +103,7 @@ exports.createTour = async (req, res, next) => {
 
         successResponse(res, {
             status: 200,
-            message: "new tour created successfully",
+            message: "New tour created successfully",
             payload: { tour }
         })
     }
@@ -109,7 +126,7 @@ exports.deleteTour = async (req, res, next) => {
 
         successResponse(res, {
             status: 200,
-            message: "tour deleted successfully",
+            message: "Tour deleted successfully",
             payload: { result }
         })
     }
@@ -154,7 +171,7 @@ exports.updateTour = async (req, res, next) => {
 
         successResponse(res, {
             status: 200,
-            message: "tour updated successfully",
+            message: "Tour updated successfully",
             payload: { result }
         })
     }
