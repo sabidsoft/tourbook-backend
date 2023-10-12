@@ -39,6 +39,11 @@ exports.getToursByTagNameService = async (tag) => {
     return tours;
 }
 
+exports.getRelatedToursService = async ({ tags, currentTourId }) => {
+    const tours = await Tour.find({ tags: { $in: tags }, _id: { $ne: currentTourId } });
+    return tours;
+}
+
 exports.createTourService = async (data) => {
     const tour = await Tour.create(data);
     return tour;
