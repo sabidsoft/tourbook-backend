@@ -34,11 +34,6 @@ exports.getTourService = async (id) => {
     return tour;
 }
 
-exports.getToursByTagNameService = async (tag) => {
-    const tours = await Tour.find({ tags: { $in: tag } });
-    return tours;
-}
-
 exports.getRelatedToursService = async ({ tags, currentTourId }) => {
     const tours = await Tour.find({ tags: { $in: tags }, _id: { $ne: currentTourId } });
     return tours;

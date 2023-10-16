@@ -8,7 +8,6 @@ const {
     getTourService,
     deleteTourService,
     updateTourService,
-    getToursByTagNameService,
     getRelatedToursService,
 } = require("../services/tour.service");
 
@@ -57,21 +56,6 @@ exports.getTour = async (req, res, next) => {
             status: 200,
             message: "Tour returned by id",
             payload: { tour }
-        })
-    }
-    catch (err) {
-        next(err);
-    }
-}
-
-exports.getToursByTagName = async (req, res, next) => {
-    try {
-        const tours = await getToursByTagNameService(req.params.tag);
-
-        successResponse(res, {
-            status: 200,
-            message: "Tours returned by tag.",
-            payload: { tours }
         })
     }
     catch (err) {
