@@ -8,7 +8,6 @@ const {
     getTourService,
     deleteTourService,
     updateTourService,
-    getRelatedToursService,
 } = require("../services/tour.service");
 
 exports.getTours = async (req, res, next) => {
@@ -16,9 +15,11 @@ exports.getTours = async (req, res, next) => {
         let {
             search = '',
             page = 1,
-            limit = 9,
+            limit = 20,
             sort = '-createdAt',
             field = '',
+            tagsValues = '',
+            currentTourId = '',
             ...filterObject
         } = req.query;
 
@@ -26,10 +27,29 @@ exports.getTours = async (req, res, next) => {
         filterObject = filterObject.replace(/(gt|gte|lt|lte)/g, (value) => "$" + value);
         filterObject = JSON.parse(filterObject);
 
-        const searchRegex = new RegExp(".*" + search + ".*", "i");
-        const filters = {
-            ...filterObject,
-            $or: [{ title: { $regex: searchRegex } }]
+        let filters = {
+            ...filterObject
+        };
+
+        // get tours by search value
+        if (search) {
+            const searchRegex = new RegExp(".*" + search + ".*", "i");
+
+            filters = {
+                ...filterObject,
+                $or: [{ title: { $regex: searchRegex } }]
+            }
+        }
+
+        // get tours by tags without current tour
+        if (tagsValues && currentTourId) {
+            const tagsArray = tagsValues.split(',');
+
+            filters = {
+                ...filterObject,
+                tags: { $in: tagsArray },
+                _id: { $ne: currentTourId }
+            }
         }
 
         if (sort) sort = sort.split(',').join(' ');
@@ -56,21 +76,6 @@ exports.getTour = async (req, res, next) => {
             status: 200,
             message: "Tour returned by id",
             payload: { tour }
-        })
-    }
-    catch (err) {
-        next(err);
-    }
-}
-
-exports.getRelatedTours = async (req, res, next) => {
-    try {
-        const tours = await getRelatedToursService(req.body);
-
-        successResponse(res, {
-            status: 200,
-            message: "Tours returned by tag.",
-            payload: { tours }
         })
     }
     catch (err) {
