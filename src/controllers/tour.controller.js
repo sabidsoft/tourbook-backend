@@ -64,13 +64,14 @@ exports.getTours = async (req, res, next) => {
         })
     }
     catch (err) {
+        console.log(err);
         next(err);
     }
 }
 
 exports.getTour = async (req, res, next) => {
     try {
-        const tour = await getTourService(req.params.id);
+        const tour = await getTourService(req.params.tourId);
 
         successResponse(res, {
             status: 200,
@@ -79,6 +80,7 @@ exports.getTour = async (req, res, next) => {
         })
     }
     catch (err) {
+        console.log(err);
         next(err);
     }
 }
@@ -112,18 +114,19 @@ exports.createTour = async (req, res, next) => {
         })
     }
     catch (err) {
+        console.log(err);
         next(err);
     }
 }
 
 exports.deleteTour = async (req, res, next) => {
     try {
-        const tour = await getTourService(req.params.id);
+        const tour = await getTourService(req.params.tourId);
 
         if (!tour)
             throw createError(404, "tour is not exist");
 
-        const result = await deleteTourService(req.params.id);
+        const result = await deleteTourService(req.params.tourId);
 
         if (result.deletedCount === 0)
             throw createError(400, "failed to delete the tour");
@@ -135,6 +138,7 @@ exports.deleteTour = async (req, res, next) => {
         })
     }
     catch (err) {
+        console.log(err);
         next(err);
     }
 }
@@ -164,11 +168,13 @@ exports.updateTour = async (req, res, next) => {
                 title,
                 description,
                 tags: JSON.parse(tags),
+
+
                 imageUrl: req.body.image
             }
         }
 
-        const result = await updateTourService(req.params.id, data);
+        const result = await updateTourService(req.params.tourId, data);
 
         if (result.matchedCount === 0)
             throw createError(400, "failed to update the tour");
@@ -180,6 +186,37 @@ exports.updateTour = async (req, res, next) => {
         })
     }
     catch (err) {
-        next(err)
+        console.log(err);
+        next(err);
+    }
+}
+
+exports.likeTour = async (req, res, next) => {
+    try {
+        const tour = await getTourService(req.params.tourId);
+        const user = await getUserByEmail(req.user?.email);
+
+        const indexOfLikedUser = tour.likedUsers.findIndex(likedUser => likedUser === String(user._id));
+
+        if (indexOfLikedUser === -1)
+            tour.likedUsers.push(String(user._id));
+
+        if (indexOfLikedUser !== -1)
+            tour.likedUsers = tour.likedUsers.filter(likedUser => likedUser !== String(user._id));
+
+        const result = await updateTourService(req.params.tourId, tour);
+
+        if (result.matchedCount === 0)
+            throw createError(400, "failed to update the tour");
+
+        successResponse(res, {
+            status: 200,
+            message: "Tour updated successfully",
+            payload: { result }
+        });
+    }
+    catch (err) {
+        console.log(err);
+        next(err);
     }
 }

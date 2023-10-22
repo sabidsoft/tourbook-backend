@@ -47,6 +47,7 @@ exports.signUp = async (req, res, next) => {
         })
     }
     catch (err) {
+        console.log(err);
         next(err);
     }
 }
@@ -82,6 +83,7 @@ exports.signIn = async (req, res, next) => {
         })
     }
     catch (err) {
+        console.log(err);
         next(err);
     }
 }

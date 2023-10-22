@@ -7,12 +7,14 @@ const {
     getTour,
     deleteTour,
     updateTour,
+    likeTour,
 } = require("../controllers/tour.controller");
 
 router.get("/", getTours);
-router.get("/:id", getTour);
+router.get("/:tourId", getTour);
 router.post("/", verifyToken, uploads.single("image"), createTour);
-router.delete("/:id", verifyToken, deleteTour);
-router.patch("/:id", verifyToken, uploads.single("image"), updateTour);
+router.delete("/:tourId", verifyToken, deleteTour);
+router.patch("/:tourId", verifyToken, uploads.single("image"), updateTour);
+router.patch("/like/:tourId", verifyToken, likeTour)
 
 module.exports = router;

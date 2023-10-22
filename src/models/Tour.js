@@ -4,13 +4,14 @@ const tourSchema = new Schema({
     title: String,
     description: String,
     imageUrl: String,
-    tags: [String],
     creatorId: String,
     creatorName: String,
-    likeCount: {
-        type: Number,
-        default: 0,
+    likedUsers: {          // likedUserIds
+        type: [String],
+        default: []
     },
+    tags: [String],
+
 }, {
     timestamps: true
 })

@@ -29,8 +29,8 @@ exports.getToursService = async (filters, page, limit, sort, field) => {
     return { tours, pagination };
 }
 
-exports.getTourService = async (id) => {
-    const tour = await Tour.findOne({ _id: id });
+exports.getTourService = async (tourId) => {
+    const tour = await Tour.findOne({ _id: tourId });
     return tour;
 }
 
@@ -39,12 +39,12 @@ exports.createTourService = async (data) => {
     return tour;
 }
 
-exports.deleteTourService = async (id) => {
-    const result = await Tour.deleteOne({ _id: id });
+exports.deleteTourService = async (tourId) => {
+    const result = await Tour.deleteOne({ _id: tourId });
     return result;
 }
 
-exports.updateTourService = async (id, data) => {
-    const result = await Tour.updateOne({ _id: id }, { $set: data }, { runValidators: true });
+exports.updateTourService = async (tourId, data) => {
+    const result = await Tour.updateOne({ _id: tourId }, { $set: data }, { runValidators: true });
     return result;
 }
