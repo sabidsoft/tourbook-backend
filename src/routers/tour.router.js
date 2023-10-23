@@ -15,6 +15,6 @@ router.get("/:tourId", getTour);
 router.post("/", verifyToken, uploads.single("image"), createTour);
 router.delete("/:tourId", verifyToken, deleteTour);
 router.patch("/:tourId", verifyToken, uploads.single("image"), updateTour);
-router.patch("/like/:tourId", verifyToken, likeTour)
+router.patch("/:tourId/like", verifyToken, likeTour)
 
 module.exports = router;
