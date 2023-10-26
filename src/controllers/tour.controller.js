@@ -64,7 +64,6 @@ exports.getTours = async (req, res, next) => {
         })
     }
     catch (err) {
-        console.log(err);
         next(err);
     }
 }
@@ -80,7 +79,6 @@ exports.getTour = async (req, res, next) => {
         })
     }
     catch (err) {
-        console.log(err);
         next(err);
     }
 }
@@ -114,7 +112,6 @@ exports.createTour = async (req, res, next) => {
         })
     }
     catch (err) {
-        console.log(err);
         next(err);
     }
 }
@@ -138,7 +135,6 @@ exports.deleteTour = async (req, res, next) => {
         })
     }
     catch (err) {
-        console.log(err);
         next(err);
     }
 }
@@ -186,7 +182,6 @@ exports.updateTour = async (req, res, next) => {
         })
     }
     catch (err) {
-        console.log(err);
         next(err);
     }
 }
@@ -216,7 +211,6 @@ exports.likeTour = async (req, res, next) => {
         });
     }
     catch (err) {
-        console.log(err);
         next(err);
     }
 }

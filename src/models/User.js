@@ -2,12 +2,20 @@ const { Schema, model } = require("mongoose");
 const bcrypt = require("bcryptjs");
 
 const userSchema = new Schema({
-    name: {
+    firstName: {
         type: String,
         trim: true,
-        required: [true, "Name is required"],
-        minLength: [3, "Name is too short, minimum 3 characters long."],
-        maxLength: [30, "Name is too big, maximum 30 characters long"]
+        required: [true, "Firstname is required"],
+        minLength: [3, "Firstname is too short, minimum 3 characters long."],
+        maxLength: [30, "Firstname is too big, maximum 30 characters long"]
+    },
+
+    lastName: {
+        type: String,
+        trim: true,
+        required: [true, "Lastname is required"],
+        minLength: [3, "Lastname is too short, minimum 3 characters long."],
+        maxLength: [30, "Lastname is too big, maximum 30 characters long"]
     },
     email: {
         type: String,

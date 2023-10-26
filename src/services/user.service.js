@@ -9,3 +9,8 @@ exports.getUserByEmail = async (email) => {
     const user = await User.findOne({ email });
     return user;
 }
+
+exports.updateUserService = async (userId, data) => {
+    const result = await User.updateOne({ _id: userId }, { $set: data }, { runValidators: true });
+    return result;
+}
