@@ -10,6 +10,11 @@ exports.getUserByEmail = async (email) => {
     return user;
 }
 
+exports.getUserById = async (userId) => {
+    const user = await User.findOne({ _id: userId }, "-password");
+    return user;
+}
+
 exports.updateUserService = async (userId, data) => {
     const result = await User.updateOne({ _id: userId }, { $set: data }, { runValidators: true });
     return result;

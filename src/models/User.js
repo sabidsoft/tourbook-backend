@@ -17,6 +17,7 @@ const userSchema = new Schema({
         minLength: [3, "Lastname is too short, minimum 3 characters long."],
         maxLength: [30, "Lastname is too big, maximum 30 characters long"]
     },
+
     email: {
         type: String,
         trim: true,
@@ -32,15 +33,23 @@ const userSchema = new Schema({
             message: "Invalid email address"
         }
     },
+
+    avatar: {
+        type: String,
+        default: ""
+    },
+
     password: {
         type: String,
         required: [true, "Password is required"],
         minLength: [6, "Password should be at least 6 characters long."],
     },
+
     googleId: {
         type: String,
         required: false
     },
+
     id: {
         type: String
     }

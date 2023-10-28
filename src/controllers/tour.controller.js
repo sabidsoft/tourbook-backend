@@ -164,8 +164,6 @@ exports.updateTour = async (req, res, next) => {
                 title,
                 description,
                 tags: JSON.parse(tags),
-
-
                 imageUrl: req.body.image
             }
         }
