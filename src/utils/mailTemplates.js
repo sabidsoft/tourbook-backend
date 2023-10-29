@@ -18,7 +18,7 @@ exports.resetPassworMailTemplates = (url) => {
             <div style="background: #f6f6f6;  padding-left: 40px; padding-right: 40px; padding-top: 20px; padding-bottom: 40px; max-width: 620px; margin: 0 auto; font-family: sans-serif; color: #272727;">
                 <h1 style="text-align: center; padding-bottom: 20px; color: #267CB5;">Tourbook</h1>
                 <p>Someone (hopefully you) has requested a password reset for your Tourbook account. Click the button below to set a new password:</p>
-                <div style="margin-top: 30px; margin-bottom: 30px;">
+                <div style="margin-top: 30px; margin-bottom: 30px; text-align: center">
                     <a href="${url}" style="font-family: sans-serif; margin: 0 auto; padding-left: 20px; padding-right: 20px; padding-top: 14px; padding-bottom: 14px; text-align: center; background: #267CB5; border-radius: 5px; font-size: 20px 10px; color: #fff; cursor: pointer; text-decoration: none; display: inline-block; font-weight: bold;
                     ">Reset Password</a>
                 </div>

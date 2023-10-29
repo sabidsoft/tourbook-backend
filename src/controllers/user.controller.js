@@ -13,7 +13,7 @@ const domain = require("../utils/domain");
 exports.signUp = async (req, res, next) => {
     try {
         const { firstName, lastName, email, password } = req.body;
-        const emailValidationPattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+        const emailValidationPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
         if (!firstName)
             throw createError(400, "Firstname is required.");
@@ -73,9 +73,13 @@ exports.signUp = async (req, res, next) => {
 exports.signIn = async (req, res, next) => {
     try {
         const { email, password } = req.body;
+        const emailValidationPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
         if (!email)
-            throw createError(400, "Please provide your email.");
+            throw createError(400, "Please provide your email address.");
+
+        if (!emailValidationPattern.test(email))
+            throw createError(400, "Invalid email address.");
 
         if (!password)
             throw createError(400, "Please provide your password.");
@@ -83,12 +87,12 @@ exports.signIn = async (req, res, next) => {
         const user = await getUserByEmail(email);
 
         if (!user)
-            throw createError(400, "No user found. Please create an account.");
+            throw createError(400, "No user found. Please create an account first.");
 
         const isMatchedPassword = user.comparePassword(password, user.password);
 
         if (!isMatchedPassword)
-            throw createError(400, "Your email or password is not correct.");
+            throw createError(400, "Your email or password isn't correct.");
 
         const { password: pass, ...userInfoWithoutPassword } = user.toObject();
 
@@ -126,7 +130,7 @@ exports.getUser = async (req, res, next) => {
 exports.updateUser = async (req, res, next) => {
     try {
         const { firstName, lastName, email } = req.body;
-        const emailValidationPattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+        const emailValidationPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
         if (!firstName)
             throw createError(400, "Firstname is required.");
@@ -246,7 +250,7 @@ exports.changePassword = async (req, res, next) => {
 exports.forgotPassword = async (req, res, next) => {
     try {
         const { email } = req.body;
-        const emailValidationPattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+        const emailValidationPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
         // email validation
         if (!email)
@@ -360,13 +364,13 @@ exports.resetPassword = async (req, res, next) => {
         transporter.sendMail({
             from: process.env.EMAIL_ADDRESS,
             to: user.email,
-            subject: "Tourbook account pasword reset successfully.",
+            subject: "Tourbook account pasword reset successful.",
             html: resetPasswordSuccedMailTemplates()
         })
 
         successResponse(res, {
             status: 200,
-            message: "Password reset successfully"
+            message: "Password reset successful"
         })
     }
     catch (err) {
