@@ -4,6 +4,11 @@ const { successResponse } = require("../utils/response");
 const { signupService, getUserByEmail, updateUserService, getUserById } = require("../services/user.service");
 const cloudinary = require("../utils/cloudinary");
 const bcrypt = require("bcryptjs");
+const ResetPassword = require("../models/ResetPassword");
+const { createRandomBytes } = require("../utils/createRandomBytes");
+const nodemailer = require("nodemailer");
+const { resetPassworMailTemplates, resetPasswordSuccedMailTemplates } = require("../utils/mailTemplates");
+const domain = require("../utils/domain");
 
 exports.signUp = async (req, res, next) => {
     try {
@@ -39,6 +44,9 @@ exports.signUp = async (req, res, next) => {
 
         if (password.length < 6)
             throw createError(400, "Password should be at least 6 characters long.");
+
+        if (password.length > 40)
+            throw createError(400, "Password is too long.");
 
         const isUserExist = await getUserByEmail(email);
 
@@ -234,4 +242,136 @@ exports.changePassword = async (req, res, next) => {
         next(err);
     }
 }
+
+exports.forgotPassword = async (req, res, next) => {
+    try {
+        const { email } = req.body;
+        const emailValidationPattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+
+        // email validation
+        if (!email)
+            throw createError(400, "Email is required.");
+
+        if (!emailValidationPattern.test(email))
+            throw createError(400, "Invalid email address.");
+
+        // checking user exist or not
+        const user = await getUserByEmail(email);
+        if (!user)
+            throw createError(400, "User not found.");
+
+        // find password reset token document with owner field
+        const document = await ResetPassword.findOne({ owner: user._id });
+        if (document)
+            throw createError(400, "Already we have sent you an email. Please check your inbox or spam folder.");
+
+        // generate resetPasswordToken
+        const resetPasswordToken = await createRandomBytes();
+
+        const newData = new ResetPassword({
+            owner: user._id,
+            resetPasswordToken
+        });
+
+        await newData.save();
+
+        // create a transporter using Gmail service
+        const transporter = nodemailer.createTransport({
+            service: "Gmail",
+            auth: {
+                user: process.env.EMAIL_ADDRESS,
+                pass: process.env.EMAIL_PASSWORD
+            }
+
+        });
+
+        // send the email
+        transporter.sendMail({
+            from: process.env.EMAIL_ADDRESS,
+            to: user.email,
+            subject: "Reset your Tourbook account password",
+            html: resetPassworMailTemplates(`${domain}/reset-password?resetPasswordToken=${resetPasswordToken}&userId=${user._id}`)
+        })
+
+        successResponse(res, {
+            status: 200,
+            message: "Email sent successfully.",
+        })
+    }
+    catch (err) {
+        next(err);
+    }
+}
+
+exports.resetPassword = async (req, res, next) => {
+    try {
+        const { password } = req.body;
+        const { resetPasswordToken, userId } = req.query;
+
+        if (!password)
+            throw createError(400, "Password is required.");
+
+        if (password.length < 6)
+            throw createError(400, "Password should be at least 6 characters long.");
+
+        if (password.length > 40)
+            throw createError(400, "Password is too long.");
+
+        if (!resetPasswordToken)
+            throw createError(400, "Invalid request, reset password token is required.");
+
+        if (!userId)
+            throw createError(400, "Invalid request, user id is required.");
+
+        const user = await getUserById(userId);
+        if (!user)
+            throw createError(400, "User not found.");
+
+        const document = await ResetPassword.findOne({ owner: user._id })
+        if (!document)
+            throw createError(400, "Reset password token is not found.");
+
+        const isMatchedResetPasswordToken = await document.compareToken(resetPasswordToken);
+        if (!isMatchedResetPasswordToken)
+            throw createError(400, "Reset password token is not matched, Please try again.");
+
+        // Hash the password
+        const hashedPassword = bcrypt.hashSync(password, 10);
+
+        // Update the user's password
+        const result = await updateUserService(user._id, { password: hashedPassword });
+
+        if (result.matchedCount === 0)
+            throw createError(400, "Failed to reset your password.");
+
+        await ResetPassword.findOneAndDelete({ owner: user._id });
+
+        // create a transporter using Gmail service
+        const transporter = nodemailer.createTransport({
+            service: "Gmail",
+            auth: {
+                user: process.env.EMAIL_ADDRESS,
+                pass: process.env.EMAIL_PASSWORD
+            }
+
+        });
+
+        // send the email
+        transporter.sendMail({
+            from: process.env.EMAIL_ADDRESS,
+            to: user.email,
+            subject: "Tourbook account pasword reset successfully.",
+            html: resetPasswordSuccedMailTemplates()
+        })
+
+        successResponse(res, {
+            status: 200,
+            message: "Password reset successfully"
+        })
+    }
+    catch (err) {
+        next(err);
+    }
+}
+
 
