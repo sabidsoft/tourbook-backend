@@ -1,3 +1,3 @@
-const domain = `http://localhost:3000`;
+const domain = `https://tourbook-sabid.vercel.app`;
 
 module.exports = domain;
