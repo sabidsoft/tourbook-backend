@@ -1,3 +1,3 @@
-const domain = `https://tourbook-sabid.vercel.app`;
+const domain = "https://tourbook-sabid.netlify.app";
 
 module.exports = domain;
