@@ -89,7 +89,10 @@ exports.createTour = async (req, res, next) => {
         const { path } = req.file;
 
         const result = await cloudinary.uploader.upload(path, {
-            folder: "tourbook/tour_images"
+            folder: "tourbook/tour_image",
+            width: 700,
+            height: 400,
+            crop: 'fill'
         });
 
         const user = await getUserByEmail(req.user?.email);
@@ -98,7 +101,7 @@ exports.createTour = async (req, res, next) => {
             title,
             description,
             creatorId: user._id,
-            creatorName: user.name,
+            creatorName: user.firstName + " " + user.lastName,
             tags: JSON.parse(tags),
             imageUrl: result.secure_url,
         };
